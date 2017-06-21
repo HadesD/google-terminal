@@ -23,6 +23,11 @@ int main(int argc, char* argv[])
       std::cout << "Type search query: " << std::flush;
       getline(std::cin, query);
     }
+    if(query == "q")
+    {
+      std::cout << "Exit..." << std::endl;
+      return 0;
+    }
   }
 
   std::cout << "Please wait..." << std::flush;
