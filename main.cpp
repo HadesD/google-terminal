@@ -1,7 +1,10 @@
 #include <stdio.h>
-#include <string>
 #include <iostream>
+#include <string>
+#include <regex>
 #include <curl/curl.h>
+
+using namespace std;
 
 std::string url = "http://www.google.com.vn/search?hl=vi&q=";
 std::string query;
@@ -57,8 +60,18 @@ int main(int argc, char* argv[])
         std::cerr << "HTTP Code error: " << http_code << std::endl;
       }
     }
-    
-    std::cout << data << std::endl;
+
+    // Regex
+    const regex r("<a href=(.*)>(.*)</a>");
+    smatch m;
+    if (regex_search(data, m, r))
+    {
+      for (int i=1; i<m.size(); i++)
+      {
+        cout << m[i] << endl;
+      }
+    }
+    // std::cout << data << std::endl;
 
     curl_easy_cleanup(curl);
     curl_global_cleanup();
