@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
     // Header
     struct curl_slist *list = NULL;
-    list = curl_slist_append(list, "");
+    list = curl_slist_append(list, "User-Agent: ");
 
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
     
