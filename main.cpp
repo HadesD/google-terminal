@@ -6,13 +6,14 @@
 
 using namespace std;
 
-std::string url = "http://www.google.com.vn/search?hl=vi&q=";
+std::string url = "http://www.google.com.vn/search?q=";
 std::string query;
 std::string data;
 
 bool input(int argc, char *argv[]);
 std::string encode_query(std::string &q);
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up);
+bool curl(string url);
 
 int main(int argc, char* argv[])
 {
@@ -26,56 +27,21 @@ int main(int argc, char* argv[])
 
   std::cout << "Please wait..." << std::endl;
 
-  // https://curl.haxx.se/libcurl/c/simple.html
-  CURL *curl;
-
-  curl_global_init(CURL_GLOBAL_ALL);
-  curl = curl_easy_init();
-  if (curl)
+  curl(url); 
+  // Regex
+  const regex r("<a href=\"(.*?)\">", std::regex_constants::icase);
+  smatch m;
+  if (regex_search(data, m, r))
   {
-    CURLcode res;
-    long http_code = 0;
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
-    // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-
-    // Header
-    struct curl_slist *list = NULL;
-    list = curl_slist_append(list, "User-Agent: Mosilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11");
-
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
-    
-    res = curl_easy_perform(curl);
-    if (res != CURLE_OK)
+    for (int i=0; i<m.size(); i++)
     {
-      std::cerr << "curl_easy_perform() error: " << std::endl 
-        << curl_easy_strerror(res) << std::endl;
+      //cout << m[1] << endl;
     }
-    else
-    {
-      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-      if (http_code != 200)
-      {
-        std::cerr << "HTTP Code error: " << http_code << std::endl;
-      }
-    }
-
-    // Regex
-    const regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>");
-    smatch m;
-    if (regex_search(data, m, r))
-    {
-      for (int i=1; i<m.size(); i++)
-      {
-        cout << m[i] << endl;
-      }
-    }
-    // std::cout << data << std::endl;
-
-    curl_easy_cleanup(curl);
-    curl_global_cleanup();
+    // cout << data << endl;
   }
+  copy( sregex_token_iterator(data.begin(), data.end(), r, -1),
+      sregex_token_iterator(),
+          ostream_iterator<string>(cout, "\n"));
 
   return 0;
 }
@@ -115,6 +81,52 @@ std::string encode_query(std::string &s)
   }
 
   return s;
+}
+
+bool curl(string url)
+{
+  // https://curl.haxx.se/libcurl/c/simple.html
+  CURL *curl;
+
+  curl_global_init(CURL_GLOBAL_ALL);
+  curl = curl_easy_init();
+  if (curl)
+  {
+    CURLcode res;
+    long http_code = 0;
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    // curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
+    // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+    // Header
+    struct curl_slist *list = NULL;
+    //list = curl_slist_append(list, "User-Agent: Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101");
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+    
+    res = curl_easy_perform(curl);
+    if (res != CURLE_OK)
+    {
+      std::cerr << "curl_easy_perform() error: " << std::endl 
+        << curl_easy_strerror(res) << std::endl;
+      return false;
+    }
+    else
+    {
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+      if (http_code != 200)
+      {
+        std::cerr << "HTTP Code error: " << http_code << std::endl;
+        return false;
+      }
+    }
+    curl_easy_cleanup(curl);
+    curl_global_cleanup();
+    return true;
+  }
+
+  return false;
 }
 
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up)
