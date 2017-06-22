@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
 
   if (argc == 2)
   {
-    // https://curl.haxx.se/libcurl/c/simple.html
     query = argv[1];
   }
   else if (argc == 1)
@@ -37,6 +36,7 @@ int main(int argc, char* argv[])
 
   std::cout << "Please wait..." << std::endl;
 
+  // https://curl.haxx.se/libcurl/c/simple.html
   CURL *curl;
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -49,6 +49,12 @@ int main(int argc, char* argv[])
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
     // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
+    // Header
+    struct curl_slist *list = NULL;
+    list = curl_slist_append(list, "");
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+    
     res = curl_easy_perform(curl);
     if (res != CURLE_OK)
     {
