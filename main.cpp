@@ -3,7 +3,7 @@
 #include <iostream>
 #include <curl/curl.h>
 
-std::string url = "http://www.google.com.vn/search?q=";
+std::string url = "http://www.google.com.vn/search?hl=vi&q=";
 std::string data;
 
 std::string encode_query(std::string &q);
@@ -46,12 +46,13 @@ int main(int argc, char* argv[])
     CURLcode res;
     long http_code = 0;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
     // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // Header
     struct curl_slist *list = NULL;
-    list = curl_slist_append(list, "User-Agent: ");
+    list = curl_slist_append(list, "User-Agent: Mosilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.11 (KHTML, like Gecko) Chrome/20.0.1132.57 Safari/536.11");
 
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
     
