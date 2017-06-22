@@ -1,6 +1,7 @@
 # GoogleSearchCPP
 
 Search Google in Terminal/CMD/Power Shell/...
+[![Watch the video](https://i.ytimg.com/vi/ap5jCM9ACQI/hqdefault.jpg)](https://youtu.be/ap5jCM9ACQI)
 
 # Install
 
@@ -21,10 +22,6 @@ git clone https://github.com/HadesD/CppGoogleSearch.git gg && cd gg
 sudo chmod -R 0777 .
 ./gg.sh
 ```
-
-## Demo
-
-[![Watch the video](https://i.ytimg.com/vi/ap5jCM9ACQI/hqdefault.jpg)](https://youtu.be/ap5jCM9ACQI)
 
 # License
 
