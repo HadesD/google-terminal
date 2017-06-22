@@ -4,7 +4,7 @@
 #include <regex>
 #include <curl/curl.h>
 
-using namespace std;
+// using namespace std;
 
 std::string url = "http://www.google.com.vn/search?q=";
 std::string query;
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
   // Regex
   const regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>", std::regex_constants::icase);
   smatch m;
-  string::const_iterator searchStart( data.cbegin() );
+  std::string::const_iterator searchStart( data.cbegin() );
   while (regex_search(searchStart, data.cend(), m, r))
   {
     cout << m[1] << endl;
