@@ -1,6 +1,7 @@
 # GoogleSearchCPP
 
 Search Google in Terminal/CMD/Power Shell/...
+
 [![Watch the video](https://i.ytimg.com/vi/ap5jCM9ACQI/hqdefault.jpg)](https://youtu.be/ap5jCM9ACQI)
 
 # Install
