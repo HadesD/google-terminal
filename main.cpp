@@ -29,19 +29,14 @@ int main(int argc, char* argv[])
 
   curl(url); 
   // Regex
-  const regex r("<a href=\"(.*?)\">", std::regex_constants::icase);
+  const regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>", std::regex_constants::icase);
   smatch m;
-  if (regex_search(data, m, r))
+  string::const_iterator searchStart( data.cbegin() );
+  while (regex_search(searchStart, data.cend(), m, r))
   {
-    for (int i=0; i<m.size(); i++)
-    {
-      //cout << m[1] << endl;
-    }
-    // cout << data << endl;
+    cout << m[1] << endl;
+    searchStart += m.position() + m.length();
   }
-  copy( sregex_token_iterator(data.begin(), data.end(), r, -1),
-      sregex_token_iterator(),
-          ostream_iterator<string>(cout, "\n"));
 
   return 0;
 }
