@@ -10,44 +10,77 @@ std::string url = "http://www.google.com.vn/search?q=";
 std::string query;
 std::string data;
 
-bool input(int argc, char *argv[]);
+bool input();
 std::string encode_query(std::string &q);
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up);
-bool curl(string url);
+bool curl(std::string url);
 
 int main(int argc, char* argv[])
 {
-  if (input(argc, argv) == false)
+  if (argc == 2)
   {
-    return 0;
+    query = argv[1];
+  }
+  else
+  {
+    if (input() == false)
+    {
+      return 0;
+    }
   }
 
   url += encode_query(query);
   std::cout << url << std::endl;
 
-  std::cout << "Please wait..." << std::endl;
-
   curl(url); 
   // Regex
-  const regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>", std::regex_constants::icase);
-  smatch m;
-  std::string::const_iterator searchStart( data.cbegin() );
-  while (regex_search(searchStart, data.cend(), m, r))
+  const std::regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>");
+  std::match_results<std::string::const_iterator> m;
+  std::string::const_iterator searchStart = data.begin();
+  int i = 0;
+  std::string uri[30];
+  while (std::regex_search(searchStart, data.cend(), m, r))
   {
-    cout << m[1] << endl;
-    searchStart += m.position() + m.length();
+    searchStart = m[0].second;
+    if (std::string(m[1]).find("/url?q=") == std::string::npos)
+    {
+      continue;
+    }
+    i++;
+    uri[i] = std::string(m[1]);
+    std::cout << "-[" << i << "]- " << m[2] << std::endl;
+    if (std::string(m[1]).find("webcache.googleusercontent.com") == std::string::npos)
+    {
+      std::cout << "\tDirect: " << m[1] << std::endl;
+    }
+    else
+    {
+      std::cout << "\tCache: " << m[1] << std::endl;
+    }
+  }
+
+  if (i > 0)
+  {
+    std::string choose;
+    std::cout << "Choose a number: ";
+    while (
+      !(std::cin >> choose) ||
+      choose > std::to_string(i) ||
+      choose <= std::to_string(0) ||
+      choose == "\n"
+      )
+    {
+      std::cout << "Number must be > 0 and < " << (i+1) << ": ";
+    }
+    curl("http://google.com.vn" + uri[std::stoi(choose)]);
+    std::cout << data << std::endl;
   }
 
   return 0;
 }
 
-bool input(int argc, char *argv[])
+bool input()
 {
-  if (argc == 2)
-  {
-    query = argv[1];
-    return true;
-  }
   while (query.empty())
   {
     std::cout << "Type search query: ";
@@ -58,6 +91,7 @@ bool input(int argc, char *argv[])
     std::cout << "Exit..." << std::endl;
     return false;
   }
+
   return true;
 }
 
@@ -78,8 +112,9 @@ std::string encode_query(std::string &s)
   return s;
 }
 
-bool curl(string url)
+bool curl(std::string url)
 {
+  std::cout << "Please wait..." << std::endl;
   // https://curl.haxx.se/libcurl/c/simple.html
   CURL *curl;
 
@@ -90,7 +125,7 @@ bool curl(string url)
     CURLcode res;
     long http_code = 0;
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    // curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &writeCallback);
     // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-app_name = gg
+app_name=gg
 
 if [ -f $app_name ]; then
     rm -r $app_name
@@ -14,7 +14,7 @@ if [ ! -f $app_name ]; then
 fi
 
  # DEBUG
-./gg
+./$app_name $1
 exit
 
 while true; do
