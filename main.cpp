@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     }
 
     // Regex
-    const regex r("<a href=(.*)>(.*)</a>");
+    const regex r("<a.*?href=\"(.*?)\".*?>(.*?)</a>");
     smatch m;
     if (regex_search(data, m, r))
     {
