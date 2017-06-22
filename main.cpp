@@ -4,31 +4,18 @@
 #include <curl/curl.h>
 
 std::string url = "http://www.google.com.vn/search?hl=vi&q=";
+std::string query;
 std::string data;
 
+bool input(int argc, char *argv[]);
 std::string encode_query(std::string &q);
 size_t writeCallback(char* buf, size_t size, size_t nmemb, void* up);
 
 int main(int argc, char* argv[])
 {
-  std::string query;
-
-  if (argc == 2)
+  if (input(argc, argv) == false)
   {
-    query = argv[1];
-  }
-  else if (argc == 1)
-  {
-    while (query.empty())
-    {
-      std::cout << "Type search query: ";
-      getline(std::cin, query);
-    }
-    if (query == "q")
-    {
-      std::cout << "Exit..." << std::endl;
-      return 0;
-    }
+    return 0;
   }
 
   url += encode_query(query);
@@ -78,6 +65,26 @@ int main(int argc, char* argv[])
   }
 
   return 0;
+}
+
+bool input(int argc, char *argv[])
+{
+  if (argc == 2)
+  {
+    query = argv[1];
+    return true;
+  }
+  while (query.empty())
+  {
+    std::cout << "Type search query: ";
+    getline(std::cin, query);
+  }
+  if (query == "q")
+  {
+    std::cout << "Exit..." << std::endl;
+    return false;
+  }
+  return true;
 }
 
 std::string encode_query(std::string &s)
